@@ -1,11 +1,10 @@
 
 
 import cv2
-import matplotlib.pyplot as plt
 # from google.colab.patches import cv2_imshow
 import numpy as np
 
-class Preprocessing():
+class Preprocessing:
   def inputImage(self, img_path = "pics.jpg" ):
     """Reading the rgb image,
     converting to gray."""
@@ -22,32 +21,32 @@ class Preprocessing():
     #
     # image = cv2.resize(image,dim, interpolation = cv2.INTER_AREA)
 
-  def cannyEdge(self, g):
+  def cannyEdge(self):
     """Canny edge detection on the ingested image."""
-    g = self.inputImage(g)
+    g = preprocess_obj.inputImage()
     edge = cv2.Canny(g, 30, 30)
     print("Done Canny.")
     return edge
 
-  def inverseForMultiply(self, cany):
-    cany = self.cannyEdge(cany)
+  def inverseForMultiply(self):
+    cany = preprocess_obj.cannyEdge()
     inverse = np.where((cany<200),1,0).astype('uint8')  ## type for opencv format.
     inverse = inverse.astype(np.uint8) ## for opencv format.
     # cv2.imshow(inverse)
     print("Inverse done.")
     return inverse
 
-  def bitwiseAnd(self, inv):
+  def bitwiseAnd(self):
     """Bitwise ANDing the images."""
-    inv = self.inverseForMultiply(inv)
+    inv = preprocess_obj.inverseForMultiply()
     result = cv2.bitwise_and(image, image,mask = inv)     ##### change needed here.
     # cv2.imshow(result)
     print("Bitwise and done.")
     return result
 
-  def color_quantization(self,img, k=8):  # can change the value of k.
+  def color_quantization(self, k=8):  # can change the value of k.
     """Quantizing the image."""
-    img = self.bitwiseAnd(img)
+    img = preprocess_obj.bitwiseAnd()
     # Transform the image
     data = np.float32(img).reshape((-1, 3))
 
@@ -64,9 +63,9 @@ class Preprocessing():
     # quantized = color_quantization(result, 8)
     # # cv2.imshow(quantized)
     # print("Quantized done.")
-  def blurring(self, qntz_img):
+  def blurring(self):
     """Applying blurring on quantized image."""
-    qntz_img = self.color_quantization(qntz_img)
+    qntz_img = preprocess_obj.color_quantization()
     blurred = cv2.bilateralFilter(qntz_img, d=7, sigmaColor=200,sigmaSpace=200)
     '''d — Diameter of each pixel neighborhood
     sigmaColor — A larger value of the parameter means larger areas of semi-equal color.
