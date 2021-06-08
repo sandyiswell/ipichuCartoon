@@ -5,14 +5,11 @@ import matplotlib.pyplot as plt
 # from google.colab.patches import cv2_imshow
 import numpy as np
 
-
-
-
 class Preprocessing():
-  def inputImage(self, img ):
+  def inputImage(self, img_path = "pics.jpg" ):
     """Reading the rgb image,
     converting to gray."""
-    image = cv2.imread(img)
+    image = cv2.imread(img_path)
     # height, width = image.shape
     g = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
     return g
@@ -25,23 +22,32 @@ class Preprocessing():
     #
     # image = cv2.resize(image,dim, interpolation = cv2.INTER_AREA)
 
-  def cannyEdge(self, gray):
-    g =
+  def cannyEdge(self, g):
+    """Canny edge detection on the ingested image."""
+    g = self.inputImage(g)
     edge = cv2.Canny(g, 30, 30)
     print("Done Canny.")
+    return edge
 
   def inverseForMultiply(self, cany):
-    inverse = np.where((edge<200),1,0).astype('uint8')  ## type for opencv format.
+    cany = self.cannyEdge(cany)
+    inverse = np.where((cany<200),1,0).astype('uint8')  ## type for opencv format.
     inverse = inverse.astype(np.uint8) ## for opencv format.
     # cv2.imshow(inverse)
     print("Inverse done.")
+    return inverse
 
   def bitwiseAnd(self, inv):
-    result = cv2.bitwise_and(image, image,mask = inverse)
+    """Bitwise ANDing the images."""
+    inv = self.inverseForMultiply(inv)
+    result = cv2.bitwise_and(image, image,mask = inv)     ##### change needed here.
     # cv2.imshow(result)
     print("Bitwise and done.")
+    return result
 
-  def color_quantization(img, k):
+  def color_quantization(self,img, k=8):  # can change the value of k.
+    """Quantizing the image."""
+    img = self.bitwiseAnd(img)
     # Transform the image
     data = np.float32(img).reshape((-1, 3))
 
@@ -55,19 +61,24 @@ class Preprocessing():
     res = res.reshape(img.shape)
     return res
 
+    # quantized = color_quantization(result, 8)
+    # # cv2.imshow(quantized)
+    # print("Quantized done.")
+  def blurring(self, qntz_img):
+    """Applying blurring on quantized image."""
+    qntz_img = self.color_quantization(qntz_img)
+    blurred = cv2.bilateralFilter(qntz_img, d=7, sigmaColor=200,sigmaSpace=200)
+    '''d — Diameter of each pixel neighborhood
+    sigmaColor — A larger value of the parameter means larger areas of semi-equal color.
+    sigmaSpace –A larger value of the parameter means that farther pixels will 
+       influence each other as long as their colors are close enough.
+    '''
 
-quantized = color_quantization(result, 8)
-# cv2.imshow(quantized)
-print("Quantized done.")
+    return blurred
 
-blurred = cv2.bilateralFilter(quantized, d=7, sigmaColor=200,sigmaSpace=200)
-'''d — Diameter of each pixel neighborhood
-sigmaColor — A larger value of the parameter means larger areas of semi-equal color.
-sigmaSpace –A larger value of the parameter means that farther pixels will 
-   influence each other as long as their colors are close enough.
-'''
 
-cv2.imshow('blurred', blurred)
+preprocess_obj = Preprocessing()
+cv2.imshow("blurred", preprocess_obj.blurring())
 cv2.waitKey(0)
 # cv2.imwrite("output.jpg", blurred)
 
