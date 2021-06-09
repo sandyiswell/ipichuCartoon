@@ -30,7 +30,7 @@ d - bitwise AND
 e - colour quantization and
 f - blurring"""
 
-image = cv2.imread("pics.jpg")
+image = cv2.imread("khushi.jpg")
 # height, width = image.shape
 g = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
 
@@ -58,8 +58,8 @@ print("Quantization done.")
 blurred = cv2.bilateralFilter(reslt, d=7, sigmaColor=200, sigmaSpace=200)
 # cv2_imshow(blurred)
 print("Blurring done.")
-cv2.imshow("blurred", blurred)
-cv2.waitKey(0)
+# cv2.imshow("blurred", blurred)
+# cv2.waitKey(0)
 
 #########################################
 # creating the filter.
@@ -85,9 +85,10 @@ for channel in channels:
                 instance = channel[h:h+3, w:w+3]
                 avg = int(np.sum(instance * filter)/ 8)
                 channel[h +1, w +1] = avg
-
+    print(f"channel {channel} done.")
 
 merged = cv2.merge([b, g, r])
 cv2.imshow("merged", merged )
+cv2.imwrite("output.jpg", merged)
 cv2.waitKey(0)
 
