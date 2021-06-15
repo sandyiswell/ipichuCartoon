@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 
 
-def color_quantization(img, k=8):  # can change the value of k.
+def color_quantization(img, k=20):  # can change the value of k.
     """Quantizing the image."""
     # img = preprocess_obj.bitwiseAnd()
     # Transform the image
@@ -30,10 +30,10 @@ d - bitwise AND
 e - colour quantization and
 f - blurring"""
 
-image = cv2.imread("khushi.jpg")
+image = cv2.imread("joker.jpg")
+print(image.shape)
 # height, width = image.shape
 g = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-
 # canny edge detection.
 edge = cv2.Canny(g, 30, 30)
 print("Done Canny.")
@@ -44,7 +44,6 @@ inverse = np.where((edge < 200), 1, 0).astype('uint8')  ## type for opencv forma
 inverse = inverse.astype(np.uint8)  ## for opencv format.
 # cv2_imshow(inverse)
 print("Inverse done.")
-
 result = cv2.bitwise_and(image, image, mask=inverse)  ##### change needed here.
 # cv2.imshow(result)
 # cv2_imshow(result)
@@ -76,19 +75,25 @@ print("shape of blue channel", b.shape)
 print("shape of green channel", g.shape)
 print("shape of red channel", r.shape)
 
+
 channels = [b, g, r]
+ch = 0
 
 for channel in channels:
     for h in range(channel.shape[0]-2):
         for w in range(channel.shape[1]-2):
-            if channel[h +1, w +1] <50:
+            # maximum pixel value which can be accommodated.
+            max_pix_val = 150
+            if channel[h +1, w +1] < max_pix_val:
                 instance = channel[h:h+3, w:w+3]
                 avg = int(np.sum(instance * filter)/ 8)
                 channel[h +1, w +1] = avg
-    print(f"channel {channel} done.")
+    ch = ch +1
+    print(f"channel {ch} done.")
 
 merged = cv2.merge([b, g, r])
+
 cv2.imshow("merged", merged )
-cv2.imwrite("output.jpg", merged)
+cv2.imwrite("output8.jpg", merged)
 cv2.waitKey(0)
 
