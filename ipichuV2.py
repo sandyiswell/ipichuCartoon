@@ -5,14 +5,14 @@ import cv2
 import numpy as np
 
 
-def color_quantization(img, k=20):  # can change the value of k.
+def color_quantization(img, k= 6):  # can change the value of k.
     """Quantizing the image."""
     # img = preprocess_obj.bitwiseAnd()
     # Transform the image
     data = np.float32(img).reshape((-1, 3))
 
     # Determine criteria
-    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 20, 0.001)
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 200, 0.01)
 
     # Implementing K-Means
     ret, label, center = cv2.kmeans(data, k, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
@@ -30,7 +30,7 @@ d - bitwise AND
 e - colour quantization and
 f - blurring"""
 
-image = cv2.imread("joker.jpg")
+image = cv2.imread("input/dodge.jpg")
 print(image.shape)
 # height, width = image.shape
 g = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
@@ -54,7 +54,7 @@ reslt = color_quantization(result)
 print("Quantization done.")
 
 # blurring.
-blurred = cv2.bilateralFilter(reslt, d=7, sigmaColor=200, sigmaSpace=200)
+blurred = cv2.bilateralFilter(reslt, d=5, sigmaColor=100, sigmaSpace=100)
 # cv2_imshow(blurred)
 print("Blurring done.")
 # cv2.imshow("blurred", blurred)
@@ -94,6 +94,6 @@ for channel in channels:
 merged = cv2.merge([b, g, r])
 
 cv2.imshow("merged", merged )
-cv2.imwrite("output8.jpg", merged)
+# cv2.imwrite("outputdodge.jpg", merged)
 cv2.waitKey(0)
 
