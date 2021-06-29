@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import linregress
 import os
+import pandas as pd
 
 
 
@@ -41,7 +42,7 @@ def regrPlot(img):
     # print("m : ", m)
     # plt.plot(x, m * x + b)
     g = sns.jointplot(x, y,  kind='reg',
-                      joint_kws={'line_kws': {'color': 'red'}})
+                      joint_kws={'line_kws': {'color': 'yellow'}})
     plt.show()
     slope, intercept, rvalue, pvalue, stderror = linregress(x,y)
     print(f"slope, intercept, rvalue, pvalue, stderror: {slope, intercept, rvalue, pvalue, stderror}")
@@ -51,11 +52,20 @@ def regrPlot(img):
 # regrPlot(img2)
 # regrPlot(img3)
 
-dirpath = r"Truepixel\20023_[38.724226490000000_-104.689460800000000]"
-images = os.listdir(dirpath)
-for image in images:
-    image1 = cv2.imread(os.path.join(dirpath, image))
-    regrPlot(image1)
+dirpath = r"single_property"
+ppties = os.listdir(dirpath)
+df = []
+for ppty in ppties:
+    pptypath = os.path.join(dirpath, ppty)
+    images = os.listdir(pptypath)
+    for image in images:
+        imagepath = os.path.join(pptypath, image)
+        image1 = cv2.imread(imagepath)
+        slope, intercept, rvalue, pvalue, stderror = regrPlot(image1)  ##
+        df.append([ppty[:5], image, round(slope,5), round(intercept,5), round(rvalue,5), round(pvalue,5), round(stderror,8)])
+
+mydf = pd.DataFrame(df, columns= ["property", "image", "slope", "intercept", "rvalue", "pvalue", "stderror"])
+# mydf.to_csv("Truepixel_regLines.csv", index= False)
 
 
 
