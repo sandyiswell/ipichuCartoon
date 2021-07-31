@@ -11,7 +11,8 @@ RGB images. You can input any RGB coloured images. You may take few example imag
 # What are the developing options?
 This program conveys only a basic structure of cartoonishing the given colour images. 
 Many developing options here includes altering:
-- edge detection methods
-- extending to any kind of image
-- quantizing to any level
+- edge detection methods,
+- extending to any kind of image,
+- quantizing to any level,
+- exploring new filters,
 - applying new filters etc...
