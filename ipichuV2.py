@@ -98,5 +98,6 @@ def createCartoon(imgPath):
     # cv2.imwrite("devsena.jpg", merged)
     cv2.waitKey(0)
 
+# Run the program by loading image.
 createCartoon('input/actress.jpg')
 
