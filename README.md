@@ -14,5 +14,4 @@ Many developing options here includes altering:
 - edge detection methods,
 - extending to any kind of image,
 - quantizing to any level,
-- exploring new filters,
 - applying new filters etc...
