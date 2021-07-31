@@ -7,12 +7,6 @@ from scipy.stats import linregress
 import os
 import pandas as pd
 
-
-
-# img1 = cv2.imread(r"Truepixel\20018_[38.725973600000000_-104.667953000000000]\2019-03-27_7.jpeg")
-# img2 = cv2.imread(r"Truepixel\20018_[38.725973600000000_-104.667953000000000]\2019-04-27_8.jpeg")
-# img3 = cv2.imread(r"Truepixel\20018_[38.725973600000000_-104.667953000000000]\2019-08-27_12.jpeg")
-
 def createLines(img):
     """Takes an image, finds Canny output and finds lines up on it."""
     mask = np.zeros((img.shape[0], img.shape[1]))
@@ -42,30 +36,32 @@ def regrPlot(img):
     # print("m : ", m)
     # plt.plot(x, m * x + b)
     g = sns.jointplot(x, y,  kind='reg',
-                      joint_kws={'line_kws': {'color': 'yellow'}})
+                      joint_kws={'line_kws': {'color': 'magenta'}})
     plt.show()
     slope, intercept, rvalue, pvalue, stderror = linregress(x,y)
     print(f"slope, intercept, rvalue, pvalue, stderror: {slope, intercept, rvalue, pvalue, stderror}")
     return slope, intercept, rvalue, pvalue, stderror
 
-# regrPlot(img1)
-# regrPlot(img2)
-# regrPlot(img3)
-
-dirpath = r"single_property"
+dirpath = r"mix_properties"
 ppties = os.listdir(dirpath)
 df = []
 for ppty in ppties:
     pptypath = os.path.join(dirpath, ppty)
     images = os.listdir(pptypath)
-    for image in images:
-        imagepath = os.path.join(pptypath, image)
-        image1 = cv2.imread(imagepath)
-        slope, intercept, rvalue, pvalue, stderror = regrPlot(image1)  ##
-        df.append([ppty[:5], image, round(slope,5), round(intercept,5), round(rvalue,5), round(pvalue,5), round(stderror,8)])
+    for i in range(len(images)-1):
+        imagepath1 = os.path.join(pptypath, images[i])
+        imagepath2 = os.path.join(pptypath, images[i+1])
+        image1 = cv2.imread(imagepath1)
+        image2 = cv2.imread(imagepath2)
+        slope1, intercept1, rvalue1, pvalue1, stderror1 = regrPlot(image1)  ##
+        slope2, intercept2, rvalue2, pvalue2, stderror2 = regrPlot(image2)  ##
+        df.append([ppty[:5], images[i], images[i+1], round(slope1,5), round(intercept1,5), round(rvalue1,5), round(pvalue1,5), round(stderror1,8),
+                   round(slope2,5), round(intercept2,5), round(rvalue2,5), round(pvalue2,5), round(stderror2,8)])
 
-mydf = pd.DataFrame(df, columns= ["property", "image", "slope", "intercept", "rvalue", "pvalue", "stderror"])
-# mydf.to_csv("Truepixel_regLines.csv", index= False)
+mydf = pd.DataFrame(df, columns= ["property", "image1", "image2", "slope1", "intercept1", "rvalue1", "pvalue1", "stderror1",
+                                  "slope2", "intercept2", "rvalue2", "pvalue2", "stderror2"])
+
+# mydf.to_csv("Truepixel_regLines_imgsCompared.csv", index= False)
 
 
 
